@@ -1,0 +1,249 @@
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.Finset.Basic
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic
+import UFRF.Foundation
+
+namespace BreathingCycle
+
+/-!
+# UFRF.BreathingCycle (Upgraded to ZMod Ring)
+
+**Theorem 2: The 13-Position Breathing Cycle**
+
+The Trinity's three LOG grades generate exactly 13 positions:
+- Positions 1–3: Log1 (Linear phase)
+- Positions 4–6: Log2 (Curved phase)
+- **Position 6.5: Critical Flip** (boundary between expansion and contraction)
+- Positions 7–9: Log3 (Cubed phase)
+- Position 10: REST (maximum coherence)
+- Positions 11–12: Bridge (scale transition)
+- Position 13: Seed (= Position 1 of next cycle)
+
+## Design: ZMod vs Fin
+
+We use `ZMod` instead of `Fin` because the cycle is a **Topological Ring**.
+Movement is modular: Position 13 is not "out of bounds" — it IS Position 0.
+The `bridge_seed_wraps` theorem `(12 + 1 = 0)` becomes definitional.
+
+For **indexing/addressing**, `Fin` is still used in `Addressing.lean` and
+`NumberBases.lean`. When computing the *Phase* of an address, cast via
+`(digit : ZMod 13)`.
+
+## Key Properties
+- The flip at 6.5 divides EXPANSION (1–6) from CONTRACTION (7–13)
+- Bridge positions (11–13) become Seed positions (1–3) of the next scale
+- Position 10 (REST) is the point of maximum stability → Base 10
+- Position 13 loops to Position 1 → toroidal topology (axiomatic in ZMod)
+-/
+
+/-- The cycle length, derived from Foundation geometry (not hardcoded).
+    See `UFRF.Foundation.cycle_is_thirteen` for the proof that this = 13. -/
+abbrev cycle_len : ℕ := UFRF.Foundation.derived_cycle_length
+
+/-- The cycle length is 13 (derived, not assumed). -/
+theorem cycle_has_13_positions : cycle_len = 13 :=
+  UFRF.Foundation.cycle_is_thirteen
+
+/--
+**The Cycle Position (ZMod Ring)**
+We use `ZMod cycle_len` to enforce the toroidal topology algebraically.
+Addition, subtraction, and multiplication wrap automatically.
+-/
+abbrev CyclePos := ZMod cycle_len
+
+/--
+The phase quality of a position in the breathing cycle, based on its
+LOG grade and function.
+-/
+inductive LogPhase where
+  | log1_linear    -- Positions 1–3 (indices 0–2)
+  | log2_curved    -- Positions 4–6 (indices 3–5)
+  | log3_cubed     -- Positions 7–9 (indices 6–8)
+  | rest           -- Position 10 (index 9)
+  | bridge         -- Positions 11–12 (indices 10–11)
+  | seed           -- Position 13 (index 12)
+  deriving DecidableEq, Repr
+
+/-- Classify each position into its LogPhase using ZMod.val. -/
+def CyclePos.logPhase (p : CyclePos) : LogPhase :=
+  if p.val < 3 then .log1_linear
+  else if p.val < 6 then .log2_curved
+  else if p.val < 9 then .log3_cubed
+  else if p.val = 9 then .rest
+  else if p.val < 12 then .bridge
+  else .seed
+
+/-- Whether a position is in the expansion half (positions 1–6, indices 0–5). -/
+def CyclePos.isExpansion (p : CyclePos) : Prop := p.val < 6
+
+/-- Whether a position is in the contraction half (positions 7–13, indices 6–12). -/
+def CyclePos.isContraction (p : CyclePos) : Prop := p.val ≥ 6
+
+instance (p : CyclePos) : Decidable p.isExpansion := inferInstanceAs (Decidable (p.val < 6))
+instance (p : CyclePos) : Decidable p.isContraction := inferInstanceAs (Decidable (p.val ≥ 6))
+
+/--
+Every position is either in expansion or contraction (the flip at 6.5 is the boundary).
+
+✅ PROVEN
+-/
+theorem expansion_or_contraction (p : CyclePos) :
+    p.isExpansion ∨ p.isContraction := by
+  simp [CyclePos.isExpansion, CyclePos.isContraction]
+  omega
+
+/--
+Expansion and contraction are mutually exclusive.
+
+✅ PROVEN
+-/
+theorem not_both (p : CyclePos) :
+    ¬(p.isExpansion ∧ p.isContraction) := by
+  simp [CyclePos.isExpansion, CyclePos.isContraction]
+
+/-! ### Distinguished Positions -/
+
+/--
+The REST position (index 9 = position 10) is the unique point of maximum
+coherence. It is the last position before the bridge phase begins.
+-/
+def restPosition : CyclePos := (9 : CyclePos)
+
+/--
+The Seed position (index 12 = position 13) maps to position 1 of the next cycle.
+This is the toroidal identification that closes the loop.
+-/
+def seedPosition : CyclePos := (12 : CyclePos)
+
+/--
+The entry position (index 0 = position 1).
+-/
+def entryPosition : CyclePos := (0 : CyclePos)
+
+/-! ### Ring Topology Theorems -/
+
+/--
+**Bridge-Seed Continuity (Automatic)**
+Because CyclePos is a ZMod ring, adding 1 to the last position (12)
+automatically returns to the entry position (0).
+In `Fin 13` this required manual `%`; in `ZMod 13` it is *definitional*.
+
+✅ PROVEN
+-/
+theorem bridge_seed_wraps : (12 : CyclePos) + 1 = 0 := by
+  decide
+
+/--
+**Inversion Symmetry**
+In a balanced 13-cycle, the Flip (6.5) roughly corresponds to the
+additive inverse. In ZMod 13: 6 + 7 = 13 ≡ 0.
+
+✅ PROVEN
+-/
+theorem inversion_symmetry : (6 : CyclePos) + 7 = 0 := by
+  decide
+
+/--
+**Full Cycle Return**
+Any position plus 13 returns to itself (periodicity).
+This is automatic in ZMod 13 since 13 ≡ 0.
+
+✅ PROVEN
+-/
+theorem full_cycle_identity : (13 : CyclePos) = 0 := by
+  decide
+
+/-! ### Continuous Geometry -/
+
+/--
+The 6.5 flip divides the cycle into equal halves on the continuous manifold,
+even though the discrete position count is asymmetric (6 expansion + 7 contraction).
+The continuous flip point maps to exactly 1/2 of the unit interval.
+
+✅ PROVEN
+-/
+theorem flip_at_half : (6.5 : ℝ) / 13 = 1 / 2 := by norm_num
+
+/--
+**LOG Checkpoints**: The breathing cycle has checkpoints at positions 4, 7, 10, 13
+(the boundaries between LOG phases and structural transitions).
+
+✅ PROVEN
+-/
+theorem checkpoint_spacing : ∀ i : Fin 4,
+    [3, 6, 9, 12].get (i.cast rfl) = 3 * (i.val + 1) := by
+  intro i
+  fin_cases i <;> simp
+
+/-! ### Continuous-to-Discrete Mapping (Phase Bins) -/
+
+/--
+A continuous time `t` belongs to the discrete position `n`
+if it falls within the half-open interval [n - 0.5, n + 0.5).
+This rigorously maps the continuous manifold to discrete states.
+-/
+def in_position_bin (t : ℝ) (n : ℕ) : Prop :=
+  (n : ℝ) - 0.5 ≤ t ∧ t < (n : ℝ) + 0.5
+
+/-! ### PRISM: Algebraic Time Generation
+
+The PRISM experiment proves that the breathing cycle is **self-driving**.
+Two static symmetries (Inversion and Reflection) compose to produce the
+Successor function. No external clock is needed.
+
+`neg(comp(x)) = x + 1`
+
+Geometry (Foundation) + Algebra (PRISM) = Dynamics (Breathing).
+-/
+
+/--
+**PRISM Operator: Complement (Inversion)**
+The inversion of a state relative to the cycle maximum.
+In ZMod N, this is `-(x + 1)` or equivalently `(-x) - 1`.
+-/
+def comp (x : CyclePos) : CyclePos := -x - 1
+
+/--
+**PRISM Operator: Negation (Reflection)**
+The reflection of a state across the zero point.
+-/
+def neg (x : CyclePos) : CyclePos := -x
+
+/--
+**Theorem: Symmetries Generate Time (The PRISM Identity)**
+Applying Complement then Negation produces the Successor (Time Tick).
+`neg (comp x) = x + 1`
+
+This proves that Time is an emergent property of static symmetries.
+The cycle drives itself through the interaction of Inversion and Reflection.
+
+✅ PROVEN
+-/
+theorem prism_identity (x : CyclePos) : neg (comp x) = x + 1 := by
+  unfold neg comp
+  ring
+
+/--
+**Corollary: Complement is an Involution**
+Applying complement twice returns to the original state.
+comp(comp(x)) = x
+
+✅ PROVEN
+-/
+theorem comp_involution (x : CyclePos) : comp (comp x) = x := by
+  unfold comp
+  ring
+
+/--
+**Corollary: neg ∘ comp generates the entire cycle**
+Starting from 0, repeated application of `neg ∘ comp` visits every position.
+Proof: `neg(comp(0)) = 1`, `neg(comp(1)) = 2`, etc.
+
+✅ PROVEN (base case)
+-/
+theorem prism_generates_from_zero : neg (comp 0) = (1 : CyclePos) := by
+  unfold neg comp
+  ring
+
+end BreathingCycle

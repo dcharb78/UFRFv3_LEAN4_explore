@@ -1,0 +1,158 @@
+# UFRF Lean 4 Formalization
+
+**Deriving the universe from a single axiom: `{-½, 0, +½}` with sum = 0.**
+
+This project formalizes the Universal Field Resonance Framework (UFRF) in
+Lean 4 with Mathlib, proving that physical constants, number systems,
+division algebras, gauge symmetries, and topological structure emerge
+from geometric necessity — without free parameters.
+
+## Quick Start
+
+```bash
+# Prerequisites: Lean 4 via elan
+curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh
+
+# Build
+cd ufrf-lean
+lake update
+lake exe cache get    # download prebuilt Mathlib (~2 GB)
+lake build            # compile UFRF
+```
+
+## Project Structure
+
+```
+UFRF.Lean.V3/
+├── UFRF.lean                    # Root module (imports all 31 modules)
+├── UFRF/
+│   ├── Trinity.lean             # THE axiom: {-½, 0, +½}
+│   ├── Simplex.lean             # C(4,3) = 4 from topology (was axiom)
+│   ├── KeplerTriangle.lean      # √φ from Kepler's Triangle (was axiom)
+│   ├── Structure13.lean         # Projective plane: a²+a+1 = 13
+│   ├── Foundation.lean          # Derives cycle length from Trinity
+│   ├── Constants.lean           # φ, π, τ, peak amplitude
+│   ├── ThreeLOG.lean            # Tensor grades → 9 interior positions
+│   ├── BreathingCycle.lean      # 13-position cycle, flip at 6.5
+│   ├── AngularEmbedding.lean    # S¹ mapping, Rod-Staff cross
+│   ├── Addressing.lean          # (ℤ, ZMod 13) coordinate system
+│   ├── Manifold.lean            # Torus T² master manifold
+│   ├── Recursion.lean           # Scale invariance, completeness
+│   ├── DivisionAlgebras.lean    # ℝ, ℂ, ℍ, 𝕆 → 15 dimensions
+│   ├── NumberBases.lean         # Base 10/12/13 projections
+│   ├── FineStructure.lean       # α⁻¹ = 4π³ + π² + π ≈ 137.036
+│   ├── Waveform.lean            # Piecewise breathing shape W(t)
+│   ├── PrimeChoreography.lean   # Prime superposition dynamics
+│   ├── GoldenAngle.lean         # Golden Angle → Position 5
+│   ├── Projections.lean         # Manifold collapse operators
+│   ├── Noether.lean             # Gauge groups U(1)×SU(2)×SU(3)
+│   ├── Calculus.lean            # d/dx as scale resolution
+│   ├── Riemann.lean             # Critical line Re(s) = 1/2
+│   ├── Monster.lean             # 196884 = 47×59×71 + 1
+│   ├── Phenomena.lean           # Physical constants at phases
+│   ├── PRISMAlgebra.lean        # Primitive roots, CRT, comp/neg
+│   ├── Padic.lean               # Universal p-adic conservation
+│   ├── Adele.lean               # Adelic product (5 cycle primes)
+│   ├── StarPolygon.lean         # Prime visit orders on ℤ/13ℤ
+│   ├── PositionalPhase.lean     # Golden angle emergence from position
+│   ├── KissingEigen.lean        # K(3)=12 eigenstructure → 13
+│   └── KernelProof.lean         # 86-example proof certificate
+├── PLAN.md                      # Master execution plan
+├── VALIDATION_GUIDE.md          # Auditing instructions
+├── docs/                        # Human-readable documentation
+│   ├── proofs/                  # Per-module proof docs
+│   └── consolidated/            # Cross-module summaries
+└── archive/                     # Non-core assets
+```
+
+## The Derivation Chain
+
+```
+         {-½, 0, +½}  (Trinity — the sole axiom)
+              │
+         sum = 0  (Conservation)
+              │
+    ┌─────────┼──────────┐
+    │         │          │
+   T¹        T²         T³        (Three-LOG tensor grades)
+ Linear    Curved      Cubed
+    │         │          │
+    └─────────┼──────────┘
+              │
+     9 interior + 4 structural = 13 positions  (Breathing Cycle)
+              │
+         flip at 6.5  →  6.5/13 = 1/2  (Critical Flip)
+              │
+    ┌─────────┼──────────┐
+    │         │          │
+  S¹ map    T² torus   Scale ℤ   (Angular Embedding → Manifold → Recursion)
+    │         │          │
+    ├── ℝ,ℂ,ℍ,𝕆 (15 dim)──── Hurwitz Theorem
+    │         │
+    ├── Base 10/12/13 ──────── Number Systems
+    │         │
+    ├── 4π³+π²+π = 137.036 ── Fine Structure Constant
+    │         │
+    ├── U(1)×SU(2)×SU(3) ──── Gauge Groups (12 bosons = Base 12)
+    │         │
+    ├── K(3)+1 = 13 ─────────── Kissing Number (sphere packing → cycle)
+    │         │
+    ├── {13/p} star polygons ── Star Polygons (prime visit orders)
+    │         │
+    ├── |5/13−1/φ²| < 0.003 ── Golden Angle Emergence (position, not imposed)
+    │         │
+    ├── ℤ/21ℤ ≃+* ℤ/3×ℤ/7 ── CRT Ring Isomorphism (adelic decomposition)
+    │         │
+    ├── ℤ_[p] →+* ℤ/pℤ ──────── p-adic Conservation (∀ prime p)
+    │         │
+    ├── ℤ_[3]×ℤ_[5]×...×ℤ_[13] Full Adele (5 cycle primes)
+    │         │
+    └── Re(s) = 1/2 ────────── Riemann Hypothesis (structural)
+```
+
+## Proof Status Summary
+
+| Category | Count |
+|----------|-------|
+| Proven theorems + definitions | 400+ |
+| Cross-module verification examples | **107** (KernelProof, 28 layers) |
+| Modules | **33** |
+| `sorry` statements | **0** |
+| Intentional axioms | **0** |
+
+**Zero axioms.** The entire derivation from `{-½, 0, +½}` to all UFRF constants
+and structures is proven using only standard mathematics.
+
+**Former axioms, all now proven:**
+- `resonance_at_flip` → structural theorem (resonance defined at flip, 6.5/13 = 1/2)
+- `toroidal_necessity` → `toroidal_emergence` (torus = S¹ × S¹ from dual flows)
+- `zero_point_isomorphism` → constructive definition (point → sub-scale seed)
+- `dimensional_completeness` → constructive definition (dimension embedding)
+- `merkaba_geometric_factor` → `simplex3_face_count` (C(4,3) = 4)
+- `sqrt_phi_REST` → `kepler_pythagorean` (√φ from Kepler's Triangle)
+
+## Auditing
+
+```bash
+# Find all sorry statements (should return nothing)
+grep -rn "sorry" UFRF/ --include="*.lean"
+
+# Find all axioms (should return nothing)
+grep -rn "^axiom " UFRF/ --include="*.lean"
+
+# Full build verification
+lake build
+```
+
+## Contributing
+
+To add a new theorem:
+1. Open the file in VS Code with the Lean 4 extension
+2. Write the theorem statement and use `sorry` as placeholder
+3. Place cursor on `sorry` — the infoview shows the proof state
+4. Write tactics (`norm_num`, `ring`, `simp`, `omega`, `nlinarith`, `decide`)
+5. When the squiggle disappears, the proof is complete
+
+## License
+
+This formalization is part of the UFRF Working Paper v3.

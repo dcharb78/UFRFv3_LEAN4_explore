@@ -1,0 +1,15 @@
+# Lean 4 build artifacts
+.lake/
+build/
+lean_packages/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Archives and Backups
+*.zip
+*.tar.gz
+Archive/
+backup_*/
+Ideas/
