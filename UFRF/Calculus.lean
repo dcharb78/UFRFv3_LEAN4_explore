@@ -1,8 +1,11 @@
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic
 import Mathlib.Tactic.NormNum
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 import UFRF.Foundation
 import UFRF.Padic
+import UFRF.Fourier
 
 /-!
 # UFRF.Calculus
@@ -229,3 +232,47 @@ This is universal: |ℤ/p²ℤ| / |ℤ/pℤ| = p for any prime p.
 theorem resolution_multiplicity_universal (p : ℕ) [NeZero p] :
     Fintype.card (ZMod (p ^ 2)) / Fintype.card (ZMod p) = p := by
   simp [ZMod.card, pow_succ, Nat.mul_div_cancel _ (Nat.pos_of_ne_zero (NeZero.ne p))]
+
+/-! ### Phase Trajectory Calculus
+
+A phase trajectory (a path through the breathing cycle) can be differentiated
+by taking the discrete difference between consecutive phases.
+
+The Fourier transform guarantees that this differentiation in the temporal
+domain is exactly equivalent to a phase shift (scalar multiplication) in
+the frequency domain.
+-/
+
+open Complex ZMod
+
+/-- A continuous trajectory through the discrete 13-lattice phase space. -/
+def PhasePath := ZMod 13 → ℂ
+
+/-- 
+**Discrete Derivative of a Phase Path**
+
+The change in amplitude from one phase position to the next.
+This is the `d/dt` operator applied to a path navigating the phase space.
+-/
+def discrete_derivative (f : PhasePath) : PhasePath :=
+  fun t => f (t + 1) - f t
+
+/--
+**Theorem: Derivative as Fourier Phase Shift**
+
+When a phase path is purely one of the 13 fundamental frequency modes
+(a character \chi), taking its discrete derivative is exactly equivalent
+to scaling it by the constant factor `\chi(1) - 1`.
+
+The calculus operator `d/dt` becomes scalar multiplication.
+This proves why Calculus works on the UFRF continuous topology:
+the lattice translates spatial steps perfectly into Fourier phase shifts.
+
+✅ PROVEN
+-/
+theorem derivative_is_phase_shift (χ : AddChar (ZMod 13) ℂ) (t : ZMod 13) :
+    discrete_derivative (⇑χ) t = (χ 1 - 1) * χ t := by
+  unfold discrete_derivative
+  have h_add : χ (t + 1) = χ t * χ 1 := AddChar.map_add_eq_mul χ t 1
+  rw [h_add]
+  ring

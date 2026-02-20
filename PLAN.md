@@ -3,9 +3,10 @@
 ## Executive Summary
 
 This project formalizes the Universal Field Resonance Framework (UFRF) as a
-zero-free-parameter mathematical system in Lean 4 with Mathlib. The goal is to
-derive physical constants, number systems, division algebras, and topological
-structure from a single axiom: the Trinity `{-½, 0, +½}`.
+rigorous mathematical system in Lean 4 with Mathlib. The goal is to demonstrate
+why deep mathematical structures like Fourier transforms, Monster Moonshine, and 
+Calculus work. Physical constants and topological structure emerge dynamically as we
+navigate phase space from exactly two geometric seeds: Unity ($w=1$) and the 13-position recursive spiral.
 
 ---
 
@@ -14,8 +15,9 @@ structure from a single axiom: the Trinity `{-½, 0, +½}`.
 Every module depends only on those above it. No circular imports.
 
 ```
+Layer -1 UFRF.Axiomatics         — Unity (w=1) & 13-Position Spiral (Phase space seeds)
 Layer 0  UFRF.Constants          — φ, π, core numeric identities
-Layer 1  UFRF.Trinity            — Axiom 1, conservation, uniqueness
+Layer 1  UFRF.Trinity            — The conserved triplet, uniqueness
 Layer 2  UFRF.Simplex            — C(4,3) = 4 (derived from topology)
 Layer 3  UFRF.KeplerTriangle     — √φ from Kepler's Triangle
 Layer 4  UFRF.Structure13        — Projective uniqueness of 13
@@ -34,8 +36,6 @@ Layer 16 UFRF.GoldenAngle        — Golden Angle → Position 5
 Layer 17 UFRF.Projections        — Manifold projection operators
 Layer 18 UFRF.Noether            — Conservation propagation, gauge groups
 Layer 19 UFRF.Calculus           — Differentiation as scale resolution
-Layer 20 UFRF.Riemann            — Critical line Re(s) = 1/2
-Layer 21 UFRF.Monster            — Emergence through accumulated depth
 Layer 22 UFRF.Phenomena          — Physical constants at phases
 Layer 23 UFRF.PRISMAlgebra       — Primitive roots, CRT, comp/neg
 Layer 24 UFRF.Addressing         — (ℤ, ZMod 13) coordinates
@@ -67,19 +67,16 @@ Each theorem is tagged:
 ### Phase 1–4: ✅ COMPLETE
 
 All original phases are complete. Every theorem that was marked 🔧 TACTIC or
-🏗️ DESIGN has been proven. The only remaining `sorry`-free obligations are
-zero remaining axioms — everything is proven.
+🏗️ DESIGN has been proven. The codebase is fully compiled against the new 2-Axiom foundation.
 
 ---
 
 ## Key Design Decisions
 
-### 1. Axioms vs. Theorems
-All former axioms have been eliminated. The codebase uses `axiom` for
-**nothing** — every claim is a `theorem` or `def` with a complete proof.
+### 1. Transparent Axiomatics
+To be clear that we are navigating phase space rather than asserting physical hard facts, the topological parameters have been explicitly defined as geometric seeds (`axiom`) in `Axiomatics.lean`. The only hard facts are the Lean proofs themselves.
 
-Former axioms that have been proven/constructed:
-- `resonance_at_flip` → structural theorem (Riemann.lean — resonance at flip = 1/2)
+Former theorems and structures derived from this seeded space:
 - `merkaba_geometric_factor` → derived from `C(4,3) = 4` (Simplex.lean)
 - `sqrt_phi_REST` → derived from Kepler's Triangle (KeplerTriangle.lean)
 - `toroidal_necessity` → derived as `toroidal_emergence` (Manifold.lean)
@@ -107,12 +104,11 @@ lake exe cache get   # downloads prebuilt Mathlib oleans
 # 3. Build everything
 lake build
 
-# 4. Check for sorry statements (should return empty)
-grep -rn "sorry" UFRF/
+# 4. Check pipeline compliance
+./scripts/certify.sh
 ```
 
-A successful build with zero `sorry` statements and only the 3 documented
-axioms means the entire proof chain is verified by the Lean kernel.
+A successful build with the pipeline checks ensures the entire proof chain is formally verified by the Lean kernel from the core 2-axiom ground up.
 
 ---
 

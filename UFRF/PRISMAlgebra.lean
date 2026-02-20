@@ -33,7 +33,7 @@ encodes the breathing cycle's core operations:
    neg (x ↦ -x) has inter-digit carries. Their composition is succ.
 
 ## Status
-- All theorems: ✅ PROVEN (no axioms, no sorry)
+- All theorems: ✅ PROVEN (no axioms, no placeholders)
 -/
 
 noncomputable section

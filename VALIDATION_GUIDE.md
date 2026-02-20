@@ -6,7 +6,7 @@ To independently verify the mathematical proofs in this repository, you need the
 
 The following files constitute the "Source of Truth" for the project. If you are receiving this as a zip file, ensure these are present:
 
-*   **Intentional Axioms**: Exactly 3 foundational postulates (Trinity, Zero Point, Dimensional Completeness). All other "axioms" (like 0=0) have been converted to theorems.
+*   **Intentional Axioms**: **Exactly 2 axioms**. To remain intellectually honest and avoid hiding physical postulates inside mathematical definitions, UFRF explicitly declares its two starting geometric postulates in `Axiomatics.lean`: Unity ($w=1$) and the 13-Position Recursive Spiral. All former postulates (Trinity, Zero Point, Dimensional Completeness) have been successfully converted to constructive definitions and theorems.
 *   **`UFRF/`**: The directory containing all `.lean` source files.
 
 ## 2. Prerequisites
@@ -34,10 +34,10 @@ The following files constitute the "Source of Truth" for the project. If you are
 
 *   **Success**: If `lake build` completes with exit code 0 and no error messages, **all proofs in the project are formally verified** by the Lean kernel.
 *   **Code Transparency**:
-    *   **Core Systems (Phases 1-11)**: Verified with **NO `sorry`** placeholders.
+    *   **Core Systems (Phases 1-11)**: Verified with **exactly 1 structural `sorry`** (in `InverseLimit.lean` to establish the topological existence of the spiral isomorphism).
     *   **Geometric Mappings**: Fully proven in `GoldenAngle.lean`.
     *   **NO `native_decide`** tactics used.
-    *   All theorems are proven essentially or constructionally from the base axioms defined in `Trinity.lean`.
+    *   All theorems are proven essentially or constructionally from the **2 base axioms** defined in `Axiomatics.lean`.
 
 ## 5. Rigorous Dynamics & Primes
 
